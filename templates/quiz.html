@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body class="p-5">
+<div class="container">
+    {% if category_name %}
+        <h3 class="mb-4 text-primary">{{ category_name }}</h3>
+    {% endif %}
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    {% if questions %}
+    <form method="POST" action="{{ url_for('result') }}">
+        <!-- Track total number of questions -->
+        <input type="hidden" name="total_questions" value="{{ questions|length }}">
+
+        {% for q in questions %}
+            {% set q_index = loop.index0 %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <!-- Question text -->
+                    <h5 class="card-title">Q{{ loop.index }}. {{ q.question }}</h5>
+
+                    <!-- Hidden: question text and correct ID -->
+                    <input type="hidden" name="question_{{ q_index }}" value="{{ q.question }}">
+                    <input type="hidden" name="correct_{{ q_index }}" value="{{ q.correct }}">
+
+                    {% for opt in q.options %}
+                        {% set opt_index = loop.index0 %}
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   name="option_{{ q_index }}"
+                                   id="{{ opt.id }}"
+                                   value="{{ opt.id }}">
+                            <label class="form-check-label" for="{{ opt.id }}">
+                                {{ opt.text }}
+                            </label>
+                        </div>
+
+                        <!-- Hidden fields for option metadata -->
+                        <input type="hidden" name="q{{ q_index }}_optid_{{ opt_index }}" value="{{ opt.id }}">
+                        <input type="hidden" name="q{{ q_index }}_opttext_{{ opt_index }}" value="{{ opt.text }}">
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-success mt-3">Submit Quiz</button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+</body>
+</html>

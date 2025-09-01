@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Result</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .card.correct { border-left: 5px solid #28a745; }
+        .card.incorrect { border-left: 5px solid #dc3545; }
+    </style>
+</head>
+<body class="p-5">
+<div class="container">
+    <h2 class="mb-4 text-center">Your Quiz Result</h2>
+    <div class="alert alert-info text-center">
+        You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong>
+    </div>
+
+    <div class="mt-4">
+        {% for res in results %}
+            <div class="card mb-3 {% if res.is_correct %}correct{% else %}incorrect{% endif %}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ loop.index }}. {{ res.question }}</h5>
+
+                    <ul class="list-group">
+                        {% for opt in res.options %}
+                            {% set is_selected = opt.id in res.selected_ids %}
+                            {% set is_correct = opt.id == res.correct_id %}
+                            <li class="list-group-item
+                                {% if is_correct %} list-group-item-success {% endif %}
+                                {% if is_selected and not is_correct %} list-group-item-danger {% endif %}">
+                                {{ opt.text }}
+                                {% if is_correct %}<strong> (Correct)</strong>{% endif %}
+                                {% if is_selected and not is_correct %}<strong> (Your choice)</strong>{% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    {% if res.is_correct %}
+                        <span class="badge badge-success mt-2">Correct</span>
+                    {% else %}
+                        <span class="badge badge-danger mt-2">Incorrect</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-3">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Take Another Quiz</a>
+    </div>
+</div>
+</body>
+</html>
